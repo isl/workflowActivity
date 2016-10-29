@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="workflowMonitoringExecution" name="WorkflowMonitoringExecution" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty id="serviceName" name="Service Name" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="isInCatalogue" name="isInCatalogue" type="boolean" readable="false"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="CheckServiceCatalogue" name="CheckServiceCatalogue" activiti:class="org.workflowMonitoring.CheckServiceCatalogueTask"></serviceTask>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow42" sourceRef="CheckServiceCatalogue" targetRef="exclusivegateway3">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow43" sourceRef="startevent1" targetRef="CheckServiceCatalogue">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <userTask id="userTask1" name="Necessary Fields of Service Data">
+      <extensionElements>
+        <activiti:formProperty id="serviceIp" name="Service IP" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="prefixService" name="Service Prefix" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="port" name="port" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="username" name="Username" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="password" name="Password" type="string" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow47" sourceRef="exclusivegateway3" targetRef="userTask1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isInCatalogue == true}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="servicetask1" name="Check Service Availability Before Internal Jobs" activiti:class="org.workflowMonitoring.ServiceAvailabilityReqeustingTask"></serviceTask>
+    <sequenceFlow id="flow48" sourceRef="userTask1" targetRef="servicetask1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End" activiti:async="true">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.EndEventListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="flow49" sourceRef="exclusivegateway3" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isInCatalogue == false}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow50" sourceRef="servicetask1" targetRef="exclusivegateway4">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <scriptTask id="scripttask1" name="Time for fortress-Web" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out:println "Time to enter fortress-web";</script>
+    </scriptTask>
+    <sequenceFlow id="flow51" sourceRef="exclusivegateway4" targetRef="scripttask1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isReachable == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow53" sourceRef="exclusivegateway4" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isReachable == false}]]></conditionExpression>
+    </sequenceFlow>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow54" sourceRef="scripttask1" targetRef="parallelgateway1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <scriptTask id="scripttask2" name="Parallalel Script Task1" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out:println "Parallel Task1";</script>
+    </scriptTask>
+    <sequenceFlow id="flow55" sourceRef="parallelgateway1" targetRef="scripttask2">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <scriptTask id="scripttask3" name="Parallalel Script Task2" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out:println "Parallel Task2";</script>
+    </scriptTask>
+    <sequenceFlow id="flow56" sourceRef="parallelgateway1" targetRef="scripttask3">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow57" sourceRef="scripttask2" targetRef="parallelgateway2">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow58" sourceRef="scripttask3" targetRef="parallelgateway2">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <scriptTask id="scripttask4" name="Sequential Script Task3" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out:println "sequenceTaskBeforeEnd";</script>
+    </scriptTask>
+    <sequenceFlow id="flow59" sourceRef="parallelgateway2" targetRef="scripttask4">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow60" sourceRef="scripttask4" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.workflowMonitoring.RuntimeFlowListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_workflowMonitoringExecution">
+    <bpmndi:BPMNPlane bpmnElement="workflowMonitoringExecution" id="BPMNPlane_workflowMonitoringExecution">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="370.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CheckServiceCatalogue" id="BPMNShape_CheckServiceCatalogue">
+        <omgdc:Bounds height="55.0" width="121.0" x="160.0" y="360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="350.0" y="367.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="userTask1" id="BPMNShape_userTask1">
+        <omgdc:Bounds height="61.0" width="105.0" x="452.0" y="355.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="69.0" width="105.0" x="651.0" y="350.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1680.0" y="374.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="871.0" y="367.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="61.0" width="105.0" x="991.0" y="357.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="1140.0" y="367.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="61.0" width="105.0" x="1240.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask3" id="BPMNShape_scripttask3">
+        <omgdc:Bounds height="63.0" width="105.0" x="1240.0" y="408.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="1410.0" y="367.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask4" id="BPMNShape_scripttask4">
+        <omgdc:Bounds height="58.0" width="105.0" x="1510.0" y="361.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="281.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow43" id="BPMNEdge_flow43">
+        <omgdi:waypoint x="95.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow47" id="BPMNEdge_flow47">
+        <omgdi:waypoint x="390.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="452.0" y="385.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow48" id="BPMNEdge_flow48">
+        <omgdi:waypoint x="557.0" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="651.0" y="384.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow49" id="BPMNEdge_flow49">
+        <omgdi:waypoint x="370.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="369.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="797.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1697.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1697.0" y="374.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow50" id="BPMNEdge_flow50">
+        <omgdi:waypoint x="756.0" y="384.0"></omgdi:waypoint>
+        <omgdi:waypoint x="871.0" y="387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow51" id="BPMNEdge_flow51">
+        <omgdi:waypoint x="911.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="991.0" y="387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow53" id="BPMNEdge_flow53">
+        <omgdi:waypoint x="891.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="891.0" y="559.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1697.0" y="559.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1697.0" y="409.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow54" id="BPMNEdge_flow54">
+        <omgdi:waypoint x="1096.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow55" id="BPMNEdge_flow55">
+        <omgdi:waypoint x="1160.0" y="367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1160.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="320.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow56" id="BPMNEdge_flow56">
+        <omgdi:waypoint x="1160.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1160.0" y="434.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="439.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow57" id="BPMNEdge_flow57">
+        <omgdi:waypoint x="1345.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1430.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1430.0" y="367.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow58" id="BPMNEdge_flow58">
+        <omgdi:waypoint x="1345.0" y="439.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1430.0" y="435.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1430.0" y="407.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="1450.0" y="387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1510.0" y="390.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
+        <omgdi:waypoint x="1615.0" y="390.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1680.0" y="391.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

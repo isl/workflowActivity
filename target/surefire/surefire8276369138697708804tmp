@@ -1,0 +1,5 @@
+#surefire
+#Fri Aug 12 18:00:21 EEST 2016
+user.dir=/home/metal/workspacenew/WorkflowQualityProject
+localRepository=/home/metal/.m2/repository
+basedir=/home/metal/workspacenew/WorkflowQualityProject
