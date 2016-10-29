@@ -31,6 +31,7 @@ public class FakeAndNonFakeLogIns  implements JavaDelegate {
 
 		final String host = (String) execution.getVariable("serviceIp");
 		final String port = (String) execution.getVariable("port");
+		final String selClient1 = (String) execution.getVariable("seleniumClient1");
 		String users = (String) execution.getVariable("usersNumber");
 		
 		// One thread here
@@ -53,7 +54,7 @@ public class FakeAndNonFakeLogIns  implements JavaDelegate {
 			public void run(){
 				WebDriver remoteDriver1 = null;
 				try {
-					remoteDriver1 = setUpRemote(host, port);
+					remoteDriver1 = setUpRemote(host, port, selClient1);
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -161,12 +162,12 @@ public class FakeAndNonFakeLogIns  implements JavaDelegate {
 		}
 		
 
-		private final WebDriver setUpRemote(String hostname, String port) throws MalformedURLException {
+		private final WebDriver setUpRemote(String hostname, String port, String selClient1) throws MalformedURLException {
 			// TODO Auto-generated method stub
 			  FirefoxProfile ffProfile = new FirefoxProfile();
 		        ffProfile.setPreference( "browser.safebrowsing.malware.enabled", false );
 		        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-		        final WebDriver driver = new RemoteWebDriver(new URL("http://192.168.254.134:5555/wd/hub"), capabilities);
+		        final WebDriver driver = new RemoteWebDriver(new URL("http://"+selClient1+":5555/wd/hub"), capabilities);
 		        driver.manage().window().maximize();
 
 		        // tomcat default:

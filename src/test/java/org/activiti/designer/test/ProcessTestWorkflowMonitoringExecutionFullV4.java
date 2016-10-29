@@ -85,7 +85,9 @@ public class ProcessTestWorkflowMonitoringExecutionFullV4 {
 		formTaskProperties.put("port", "8080");
 		formTaskProperties.put("username", "test");
 		formTaskProperties.put("password", "password");
+		// Number of simultaneous users that will hit the web services
 		formTaskProperties.put("usersNumber", "2");
+		formTaskProperties.put("seleniumClient1", "192.168.254.134");
 		formService.submitTaskFormData(tdefinition.getId(), formTaskProperties);
 
 		TaskEntity tfdefinition =   (TaskEntity) activitiRule.getTaskService()

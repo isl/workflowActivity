@@ -28,6 +28,7 @@
         <activiti:formProperty id="username" name="Username" type="string" required="true"></activiti:formProperty>
         <activiti:formProperty id="password" name="Password" type="string" required="true"></activiti:formProperty>
         <activiti:formProperty id="usersNumber" name="Simultaneous Users" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="seleniumClient1" name="Selenium Client 1" type="string"></activiti:formProperty>
         <activiti:executionListener event="end" class="org.workflowMonitoring.UserTaskRuntimeListener"></activiti:executionListener>
       </extensionElements>
     </userTask>
